@@ -19,4 +19,4 @@ To refine them, refactor, and shorten their names.
 
 Legacy Folder revival Archive is in this Repo. Download and contribute.
 
-![Legacy Revival image](.readme_assets/legacyrevival.png)
+![Legacy Revival image](/.readme_assets/legacyrevival.png)
