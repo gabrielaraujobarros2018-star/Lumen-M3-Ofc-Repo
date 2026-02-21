@@ -2,8 +2,6 @@
 Phosh Adaptation Guide for Samsung Galaxy A05s (Lumen Project)
 ================================================================================
 
-Project Context:
-Lumen is a custom flashable Android replacement OS targeting ARMv7a (and Moto Nexus 6 compat), seriously built from scratch.
 This guide covers ONLY the display-panel (notch/corners/resolution) adaptation for Phosh on Galaxy A05s (samsung,a05s compatible string target).
 
 Date: February 2026
@@ -84,5 +82,5 @@ Troubleshooting:
 
 That's it — Phosh side done with one tiny JSON. Kernel/boot bring-up is the real porting challenge for A05s (GKI 2.0 bootloader issues).
 
-Good luck with Lumen — keep pushing! 💎
+Good luck with Lumen
 ================================================================================
