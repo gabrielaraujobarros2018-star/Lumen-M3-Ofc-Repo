@@ -1,0 +1,88 @@
+================================================================================
+Phosh Adaptation Guide for Samsung Galaxy A05s (Lumen Project)
+================================================================================
+
+Project Context:
+Lumen is a custom flashable Android replacement OS targeting ARMv7a (and Moto Nexus 6 compat), seriously built from scratch.
+This guide covers ONLY the display-panel (notch/corners/resolution) adaptation for Phosh on Galaxy A05s (samsung,a05s compatible string target).
+
+Date: February 2026
+Author: Lumen (with Grok assistance)
+License/Notes: This document and any derived JSON configs are provided under CC0/Public Domain where possible — no restrictions. Original gmobile JSONs in upstream are typically MIT-0 or similar permissive. Keep attribution to Phosh/gmobile project if submitting upstream.
+
+Key Confirmation:
+- Adaptation for screen shape (resolution, waterdrop notch cutout, mild rounded corners) in Phosh/phoc is **purely configuration-based**.
+- No hardware tinkering, no kernel patches, no recompilation of Phosh/gmobile required for basic notch-aware UI.
+- gmobile (separate lib, runtime dep of Phosh/phoc) reads a JSON from compiled GResource or overlay → matches kernel DT compatible string.
+- If /sys/firmware/devicetree/base/compatible is missing in your custom OS → use env var override: export GMOBILE_DISPLAY_PANEL=samsung,a05s
+
+Hardware Facts (Galaxy A05s):
+- Panel: 6.7" PLS LCD, 1080 x 2400 px (\~393 ppi)
+- Notch: Small centered waterdrop-style camera cutout (not punch-hole; dated teardrop design with thick bezels/chin)
+- Corners: Mild rounding (subtle, \~10-20 logical px radius at native res)
+- Physical approx: \~70 mm width × 155 mm height (rough; use Android specs for precision if measuring)
+
+Recommended Placement in Phosh Source Tree (for local testing/overlay):
+Create this folder at ROOT of your cloned phosh repo (next to src/, data/, meson.build):
+
+a05s-adaptation/
+├── devices/
+│   └── display-panels/
+│       └── samsung,a05s.json
+└── README.md
+
+Content of samsung,a05s.json
+(adapted from upstream examples like oneplus,fajita.json / google,gs101-bluejay.json; path is approximate SVG 'M...Z' for waterdrop — tweak if screenshot shows offset)
+
+{
+  "name": "Samsung Galaxy A05s",
+  "x-res": 1080,
+  "y-res": 2400,
+  "corner-radii": [20, 20, 20, 20],
+  "width": 70,
+  "height": 155,
+  "cutouts": [
+    {
+      "name": "front_camera",
+      "path": "M 500,0 H 580 C 580,20 555,35 540,40 C 525,35 500,20 500,0 Z"
+    }
+  ]
+}
+
+Notes on JSON fields (from gmobile format, no more keys supported):
+- name: Human string (ignored by code)
+- x-res / y-res: Mandatory — native panel resolution (Wayland surface size)
+- corner-radii: Array[4] of numbers (top-left, top-right, bottom-right, bottom-left) in logical px — phoc clips/draws rounded frame
+- width / height: Physical mm (optional but good for DPI/scaling; rough values ok)
+- cutouts: Array of objects; each has "path" (SVG path data string describing hole area — phoc punches transparent hole + shifts UI)
+
+Quick Local Test (no rebuild):
+export G_RESOURCE_OVERLAYS="/mobi/phosh/gmobile/devices/display-panels=$(pwd)/a05s-adaptation/devices/display-panels"
+PHOC_DEBUG=cutouts _build/src/phosh   # purple overlay shows cutout area for tuning path
+
+Alternative Force (if no DT compatible):
+export GMOBILE_DISPLAY_PANEL=samsung,a05s
+# then launch phosh/phoc as usual
+
+Upstream Integration (Recommended Long-Term):
+1. Fork https://gitlab.gnome.org/World/Phosh/gmobile
+2. Add file to data/devices/display-panels/samsung,a05s.json (use above)
+3. Commit: "Add display panel config for Samsung Galaxy A05s"
+4. Open MR → gets baked into every Phosh build (postmarketOS, etc.) forever
+5. Once merged → delete your local a05s-adaptation/ folder
+
+Other Device-Specific Bits (NOT in Phosh/gmobile):
+- Volume/power keys → udev rules / hwdb in device package (e.g. pmaports device-samsung-a05s)
+- Haptics/LED/vibration profiles → feedbackd-device-themes repo or your package
+- Fingerprint (if any) → fprintd + driver + udev
+- These are distro/device packaging level — Phosh stays generic
+
+Troubleshooting:
+- No /sys/firmware/devicetree/base/compatible? → Kernel/bootloader not passing DTB properly (common on Samsung/MediaTek Android kernels). Fix: Extract DTB from Android boot.img, ensure "samsung,a05s" in compatible list, re-pack.
+- Cutout path off? → Use PHOC_DEBUG=cutouts screenshot, edit SVG path in Inkscape (draw bezier/ellipse for waterdrop), export path data string.
+- Scaling weird? → Tweak phoc.ini scale= factor (e.g. 1.5–2.0 for density).
+
+That's it — Phosh side done with one tiny JSON. Kernel/boot bring-up is the real porting challenge for A05s (GKI 2.0 bootloader issues).
+
+Good luck with Lumen — keep pushing! 💎
+================================================================================
