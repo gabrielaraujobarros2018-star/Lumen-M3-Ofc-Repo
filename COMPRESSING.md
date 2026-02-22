@@ -4,9 +4,17 @@
 
 In FX File Explorer, after selecting your folder and tapping "Create Archive" > ZIP:
 
-- Look for "Compression level" or slider; drag to "Maximum," "Ultra," or 9 (DEFLATE level 9).
-- Enable "Solid archive" if available—it treats the whole folder as one block for 5-15% better ratios on mixed files.
+- Look for "Compression level" or slider; drag to "Maximum," "Ultra," or 9 (DEFLATE level 9). (Step 1)
+
+![Step 1](/.readme_assets/fx-step01.jpg)
+
+- Enable "Solid archive" if available—it treats the whole folder as one block for 5-15% better ratios on mixed files. (Step 2)
+
+![Step 2](/.readme_assets/fx-step02.jpg)
+
 - Confirm and start; expect 1-4 hours depending on content (text/code compresses best).
+
+![Step 3](/.readme_assets/fx-step03.jpg)
 
 ## Setting Highest Level in WinRAR
 
